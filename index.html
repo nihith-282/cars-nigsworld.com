@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NigsWorld — Top 10 Car Competition</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body {
+  font-family:'Barlow',sans-serif;
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 20%, rgba(220,38,38,0.55) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 70% at 85% 80%, rgba(34,197,94,0.45) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(185,28,28,0.3) 0%, transparent 60%),
+    linear-gradient(135deg,#f8e8e0 0%,#fdf4ec 30%,#e8f5e8 60%,#f0fff0 100%);
+  overflow-x:hidden;
+}
+
+body::before {
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:0.5;
+}
+
+/* ===== HEADER ===== */
+header {
+  position:relative;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.2rem 3rem;
+  background:rgba(255,255,255,0.25);
+  backdrop-filter:blur(20px);
+  border-bottom:2px solid rgba(220,38,38,0.3);
+  box-shadow:0 4px 30px rgba(220,38,38,0.1);
+  flex-wrap:wrap;gap:0.8rem;
+}
+
+.logo {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:2rem;letter-spacing:4px;color:#b91c1c;
+}
+.logo span{color:#15803d;}
+
+.header-center{display:flex;align-items:center;gap:1rem;}
+
+.header-badge {
+  background:linear-gradient(135deg,#b91c1c,#dc2626);
+  color:#fff;padding:0.4rem 1.2rem;
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:0.8rem;letter-spacing:3px;text-transform:uppercase;
+  border-radius:2px;box-shadow:0 2px 12px rgba(185,28,28,0.4);
+}
+
+/* ===== WISHLIST ICON ===== */
+.wishlist-btn {
+  position:relative;
+  background:rgba(255,255,255,0.5);
+  border:2px solid rgba(185,28,28,0.3);
+  border-radius:50%;
+  width:46px;height:46px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:all 0.25s;
+  box-shadow:0 2px 10px rgba(185,28,28,0.15);
+}
+.wishlist-btn:hover{background:rgba(185,28,28,0.1);border-color:#b91c1c;transform:scale(1.08);}
+.wishlist-btn svg{width:22px;height:22px;transition:transform 0.2s;}
+.wishlist-btn:hover svg{transform:scale(1.15);}
+
+.wishlist-count {
+  position:absolute;top:-6px;right:-6px;
+  background:#b91c1c;color:#fff;
+  border-radius:50%;width:20px;height:20px;
+  font-size:0.65rem;font-weight:700;
+  display:none;align-items:center;justify-content:center;
+  border:2px solid #fff;
+}
+.wishlist-count.visible{display:flex;animation:pop 0.3s ease;}
+@keyframes pop{0%{transform:scale(0)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+.header-stats{display:flex;gap:2rem;}
+.hstat{text-align:center;}
+.hstat-num{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#b91c1c;line-height:1;}
+.hstat-label{font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:#6b7280;}
+
+/* ===== HEADER EMAIL LINK ===== */
+.header-email {
+  font-size:0.75rem;letter-spacing:1px;
+  color:#b91c1c;text-decoration:none;
+  border-bottom:1px dashed rgba(185,28,28,0.4);
+  transition:color 0.2s,border-color 0.2s;
+}
+.header-email:hover{color:#15803d;border-color:#15803d;}
+
+/* ===== WISHLIST PANEL ===== */
+.wishlist-panel {
+  position:fixed;top:0;right:-380px;
+  width:360px;height:100vh;
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(30px);
+  border-left:2px solid rgba(185,28,28,0.2);
+  z-index:500;
+  transition:right 0.35s cubic-bezier(0.4,0,0.2,1);
+  display:flex;flex-direction:column;
+  box-shadow:-10px 0 40px rgba(185,28,28,0.1);
+}
+.wishlist-panel.open{right:0;}
+
+.wishlist-panel-header {
+  padding:1.5rem 1.5rem 1rem;
+  border-bottom:1px solid rgba(185,28,28,0.15);
+  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(135deg,rgba(185,28,28,0.06),rgba(21,128,61,0.04));
+}
+.wishlist-panel-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:3px;color:#b91c1c;}
+.wishlist-close {
+  background:none;border:none;cursor:pointer;color:#6b7280;
+  width:32px;height:32px;font-size:1.2rem;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;transition:background 0.2s,color 0.2s;
+}
+.wishlist-close:hover{background:#fee2e2;color:#b91c1c;}
+
+.wishlist-items {
+  flex:1;overflow-y:auto;padding:1rem;
+  display:flex;flex-direction:column;gap:0.75rem;
+}
+.wishlist-items::-webkit-scrollbar{width:4px;}
+.wishlist-items::-webkit-scrollbar-thumb{background:rgba(185,28,28,0.3);border-radius:4px;}
+
+.wishlist-empty {
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  color:#9ca3af;gap:0.8rem;text-align:center;padding:2rem;
+}
+.wishlist-empty svg{opacity:0.3;}
+.wishlist-empty p{font-size:0.88rem;letter-spacing:1px;}
+
+.wish-item {
+  display:flex;align-items:center;gap:0.9rem;
+  background:rgba(255,255,255,0.8);
+  border:1px solid rgba(185,28,28,0.12);
+  border-radius:10px;padding:0.7rem;
+  animation:slideIn 0.3s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+.wish-item img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid rgba(185,28,28,0.2);flex-shrink:0;}
+.wish-item-info{flex:1;}
+.wish-item-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.9rem;color:#1f2937;}
+.wish-item-meta{font-size:0.72rem;color:#6b7280;margin-top:0.1rem;}
+.wish-item-rank{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#b91c1c;margin-right:0.2rem;}
+.wish-remove{background:none;border:none;cursor:pointer;color:#d1d5db;font-size:1rem;padding:4px;border-radius:4px;transition:color 0.2s,background 0.2s;}
+.wish-remove:hover{color:#b91c1c;background:#fee2e2;}
+
+.wishlist-footer {
+  padding:1.2rem 1.5rem;
+  border-top:1px solid rgba(185,28,38,0.15);
+  background:rgba(255,255,255,0.5);
+  text-align:center;
+}
+.wishlist-footer p{font-size:0.75rem;color:#9ca3af;margin-bottom:0.4rem;}
+.wishlist-footer a {
+  display:inline-block;
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:0.88rem;letter-spacing:2px;
+  color:#b91c1c;text-decoration:none;
+  padding:0.5rem 1.2rem;
+  border:1px solid rgba(185,28,28,0.3);
+  border-radius:4px;
+  transition:all 0.2s;
+}
+.wishlist-footer a:hover{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+
+/* ===== OVERLAY ===== */
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.25);backdrop-filter:blur(2px);z-index:499;display:none;}
+.panel-overlay.open{display:block;}
+
+/* ===== DASHBOARD ===== */
+.dashboard{position:relative;z-index:5;padding:2.5rem 3rem;max-width:1400px;margin:0 auto;}
+
+.section-title{text-align:center;margin-bottom:2.5rem;}
+.section-title h2 {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.5rem,6vw,4.5rem);letter-spacing:4px;
+  background:linear-gradient(135deg,#b91c1c 0%,#dc2626 40%,#15803d 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;
+}
+.section-title p{color:#6b7280;font-size:0.88rem;letter-spacing:3px;text-transform:uppercase;margin-top:0.4rem;}
+
+/* ===== ARENA ===== */
+.arena {
+  position:relative;
+  background:rgba(255,255,255,0.35);backdrop-filter:blur(24px);
+  border:2px solid rgba(220,38,38,0.2);border-radius:24px;
+  padding:3rem 2rem;
+  box-shadow:0 20px 60px rgba(185,28,28,0.12),0 4px 20px rgba(21,128,61,0.08),inset 0 1px 0 rgba(255,255,255,0.6);
+  overflow:hidden;
+}
+.arena::before {
+  content:'TOP 10';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-family:'Bebas Neue',sans-serif;font-size:12rem;letter-spacing:10px;
+  color:rgba(185,28,28,0.04);pointer-events:none;white-space:nowrap;user-select:none;
+}
+
+.podium-row{display:flex;justify-content:center;align-items:flex-end;gap:1.5rem;margin-bottom:2.5rem;}
+
+/* ===== CAR SLOT ===== */
+.car-slot {
+  display:flex;flex-direction:column;align-items:center;
+  cursor:pointer;transition:transform 0.3s;
+  animation:fadeUp 0.6s ease both;position:relative;
+}
+.car-slot:hover{transform:translateY(-8px) scale(1.03);}
+.car-slot.rank-1 .circle{width:180px;height:180px;}
+.car-slot.rank-2 .circle{width:150px;height:150px;}
+.car-slot.rank-3 .circle{width:130px;height:130px;}
+
+/* ===== CIRCLE ===== */
+.circle{width:120px;height:120px;border-radius:50%;position:relative;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.2);flex-shrink:0;}
+.circle::before{content:'';position:absolute;inset:-3px;border-radius:50%;z-index:3;padding:3px;}
+.rank-1 .circle::before{background:conic-gradient(#fbbf24,#f59e0b,#fbbf24,#f59e0b,#fbbf24);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;padding:4px;}
+.rank-2 .circle::before{background:conic-gradient(#d1d5db,#9ca3af,#d1d5db,#9ca3af);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;padding:4px;}
+.rank-3 .circle::before{background:conic-gradient(#fb923c,#ea580c,#fb923c,#ea580c);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;padding:3px;}
+.rank-other .circle::before{background:rgba(185,28,28,0.3);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;padding:2px;}
+
+.circle img{width:100%;height:100%;object-fit:cover;position:relative;z-index:1;transition:transform 0.4s;}
+.car-slot:hover .circle img{transform:scale(1.1);}
+
+.rank-badge{position:absolute;bottom:6px;right:6px;z-index:4;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;border:2px solid rgba(255,255,255,0.8);}
+.rank-1 .rank-badge{background:#f59e0b;color:#fff;}
+.rank-2 .rank-badge{background:#9ca3af;color:#fff;}
+.rank-3 .rank-badge{background:#ea580c;color:#fff;}
+.rank-other .rank-badge{background:#b91c1c;color:#fff;}
+
+/* ===== WISH HEART ===== */
+.wish-heart {
+  position:absolute;top:0;right:0;
+  background:rgba(255,255,255,0.88);
+  border:none;border-radius:50%;
+  width:30px;height:30px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:10;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  transition:all 0.2s;opacity:0;
+}
+.car-slot:hover .wish-heart,.wish-heart.active{opacity:1;}
+.wish-heart.active svg path{fill:#b91c1c;stroke:#b91c1c;}
+.wish-heart:hover{transform:scale(1.15);background:#fff;}
+.wish-heart svg{width:15px;height:15px;pointer-events:none;}
+
+/* ===== SLOT INFO ===== */
+.slot-info{text-align:center;margin-top:0.8rem;}
+.slot-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.88rem;letter-spacing:1px;color:#1f2937;text-transform:uppercase;}
+.slot-meta{font-size:0.72rem;color:#6b7280;margin-top:0.15rem;}
+.slot-score{margin-top:0.4rem;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;}
+.rank-1 .slot-score{color:#f59e0b;}
+.rank-2 .slot-score{color:#9ca3af;}
+.rank-3 .slot-score{color:#ea580c;}
+.rank-other .slot-score{color:#b91c1c;}
+
+/* ===== GRID & DIVIDER ===== */
+.grid-row{display:grid;grid-template-columns:repeat(7,1fr);gap:1rem;justify-items:center;}
+.divider{display:flex;align-items:center;gap:1rem;margin:2rem 0;}
+.divider-line{flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(185,28,28,0.3),transparent);}
+.divider-text{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:4px;text-transform:uppercase;color:#9ca3af;padding:0 0.5rem;}
+
+/* ===== SCORE BARS ===== */
+.score-bar-wrap{margin-top:2.5rem;}
+.score-bar-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:#6b7280;margin-bottom:1rem;}
+.score-bars{display:flex;flex-direction:column;gap:0.6rem;}
+.score-bar-row{display:flex;align-items:center;gap:0.8rem;}
+.score-bar-label{width:130px;font-size:0.8rem;font-weight:500;color:#374151;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.score-bar-track{flex:1;height:8px;background:rgba(185,28,28,0.1);border-radius:4px;overflow:hidden;}
+.score-bar-fill{height:100%;border-radius:4px;animation:fillBar 1.4s ease both;}
+.score-bar-val{width:42px;text-align:right;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;color:#b91c1c;}
+
+/* ===== STATS BAR ===== */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2.5rem;}
+.stat-card{background:rgba(255,255,255,0.45);backdrop-filter:blur(12px);border:1px solid rgba(185,28,28,0.15);border-radius:12px;padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1rem;box-shadow:0 4px 20px rgba(0,0,0,0.06);transition:transform 0.2s;}
+.stat-card:hover{transform:translateY(-3px);}
+.stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.stat-icon.red{background:linear-gradient(135deg,#fecaca,#fca5a5);}
+.stat-icon.green{background:linear-gradient(135deg,#bbf7d0,#86efac);}
+.stat-icon.scarlet{background:linear-gradient(135deg,#fee2e2,#fca5a5);}
+.stat-icon.gold{background:linear-gradient(135deg,#fef3c7,#fde68a);}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;line-height:1;color:#1f2937;}
+.stat-label{font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:#6b7280;margin-top:0.1rem;}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fillBar{from{width:0}to{width:var(--w)}}
+
+.podium-row .car-slot:nth-child(1){animation-delay:0.1s}
+.podium-row .car-slot:nth-child(2){animation-delay:0s}
+.podium-row .car-slot:nth-child(3){animation-delay:0.2s}
+.grid-row .car-slot:nth-child(1){animation-delay:0.3s}
+.grid-row .car-slot:nth-child(2){animation-delay:0.35s}
+.grid-row .car-slot:nth-child(3){animation-delay:0.4s}
+.grid-row .car-slot:nth-child(4){animation-delay:0.45s}
+.grid-row .car-slot:nth-child(5){animation-delay:0.5s}
+.grid-row .car-slot:nth-child(6){animation-delay:0.55s}
+.grid-row .car-slot:nth-child(7){animation-delay:0.6s}
+
+/* ===== TOOLTIP ===== */
+.tooltip{position:fixed;background:rgba(17,17,17,0.92);color:#f9fafb;padding:0.6rem 1rem;font-size:0.8rem;border-radius:6px;pointer-events:none;z-index:999;opacity:0;transition:opacity 0.2s;white-space:nowrap;border:1px solid rgba(185,28,28,0.4);}
+
+/* ===== FOOTER ===== */
+footer{position:relative;z-index:5;text-align:center;padding:2rem 1.5rem;border-top:1px solid rgba(185,28,28,0.15);background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);}
+footer strong{color:#b91c1c;}
+.footer-email {
+  display:inline-block;margin:0.6rem 0;
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:1rem;letter-spacing:3px;text-transform:uppercase;
+  color:#b91c1c;text-decoration:none;
+  padding:0.5rem 1.5rem;
+  border:2px solid rgba(185,28,28,0.35);
+  border-radius:3px;
+  transition:all 0.25s;
+}
+.footer-email:hover{background:#b91c1c;color:#fff;border-color:#b91c1c;box-shadow:0 4px 16px rgba(185,28,28,0.3);}
+.footer-copy{color:#9ca3af;font-size:0.75rem;letter-spacing:2px;margin-top:0.5rem;}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){.grid-row{grid-template-columns:repeat(4,1fr);}.stats-bar{grid-template-columns:repeat(2,1fr);}header{padding:1rem 1.5rem;}.dashboard{padding:1.5rem;}}
+@media(max-width:600px){.podium-row{gap:0.8rem;}.car-slot.rank-1 .circle{width:130px;height:130px;}.car-slot.rank-2 .circle{width:110px;height:110px;}.car-slot.rank-3 .circle{width:96px;height:96px;}.grid-row{grid-template-columns:repeat(3,1fr);}.stats-bar{grid-template-columns:repeat(2,1fr);}.header-stats{display:none;}.wishlist-panel{width:100%;}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">NIGS<span>WORLD</span></div>
+
+  <div class="header-center">
+    <div class="header-badge">🏆 World Competition 2026</div>
+    <a class="header-email" href="mailto:Cars@nigsworld.com">Cars@nigsworld.com</a>
+
+    <!-- WISHLIST BUTTON -->
+    <button class="wishlist-btn" onclick="toggleWishlistPanel()" title="My Wishlist">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+      <span class="wishlist-count" id="wishCount">0</span>
+    </button>
+  </div>
+
+  <div class="header-stats">
+    <div class="hstat"><div class="hstat-num">10</div><div class="hstat-label">Contenders</div></div>
+    <div class="hstat"><div class="hstat-num">47</div><div class="hstat-label">Nations</div></div>
+    <div class="hstat"><div class="hstat-num">∞</div><div class="hstat-label">Power</div></div>
+  </div>
+</header>
+
+<!-- WISHLIST PANEL -->
+<div class="panel-overlay" id="panelOverlay" onclick="toggleWishlistPanel()"></div>
+<div class="wishlist-panel" id="wishlistPanel">
+  <div class="wishlist-panel-header">
+    <div class="wishlist-panel-title">❤️ MY WISHLIST</div>
+    <button class="wishlist-close" onclick="toggleWishlistPanel()">✕</button>
+  </div>
+  <div class="wishlist-items" id="wishlistItems">
+    <div class="wishlist-empty" id="wishEmpty">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="1.5">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+      <p>No cars in your wishlist yet.<br/>Click the ♡ on any car to add it!</p>
+    </div>
+  </div>
+  <div class="wishlist-footer">
+    <p>Got a question? Reach us at</p>
+    <a href="mailto:Cars@nigsworld.com">Cars@nigsworld.com</a>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard">
+  <div class="section-title">
+    <h2>TOP 10 CARS<br/>IN THE WORLD</h2>
+    <p>Global Competition Rankings · 2026 Season</p>
+  </div>
+
+  <div class="arena">
+    <div class="podium-row" id="podiumRow"></div>
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-text">Challengers</div>
+      <div class="divider-line"></div>
+    </div>
+    <div class="grid-row" id="gridRow"></div>
+    <div class="score-bar-wrap">
+      <div class="score-bar-title">Performance Score Comparison</div>
+      <div class="score-bars" id="scoreBars"></div>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-icon red">🚗</div>
+      <div class="stat-text"><div class="stat-num">10</div><div class="stat-label">Top Models</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">⚡</div>
+      <div class="stat-text"><div class="stat-num">1,914</div><div class="stat-label">Max HP</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon scarlet">🏁</div>
+      <div class="stat-text"><div class="stat-num">311</div><div class="stat-label">Top Speed mph</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon gold">🏆</div>
+      <div class="stat-text"><div class="stat-num">2026</div><div class="stat-label">Season</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <strong>NIGSWORLD</strong><br/>
+  <a class="footer-email" href="mailto:Cars@nigsworld.com">✉ Cars@nigsworld.com</a>
+  <div class="footer-copy">© 2026 NigsWorld. All Rights Reserved.</div>
+</footer>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const TOP10 = [
